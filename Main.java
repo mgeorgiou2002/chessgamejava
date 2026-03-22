@@ -1,10 +1,10 @@
 package chess;
 
+import javax.swing.SwingUtilities;
+
 public class Main {
 
-	public static void main(String[] args) {
-		Game game = new Game();
-		game.start();
-	}
-
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(ChessGUI::new);
+    }
 }
