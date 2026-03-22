@@ -175,6 +175,12 @@ public class Game {
             return;
         }
 
+        if (isInsufficientMaterial()) {
+            System.out.println("Draw by insufficient material!");
+            gameOver = true;
+            return;
+            }
+
         if (isCheckmate(currentTurn)) {
             System.out.println("CHECKMATE! " + currentTurn + " loses.");
             gameOver = true;
@@ -858,4 +864,103 @@ public class Game {
 
         return true;
     }
+
+    private boolean isInsufficientMaterial() {
+    int whiteBishops = 0, blackBishops = 0;
+    int whiteKnights = 0, blackKnights = 0;
+    int whiteOther = 0, blackOther = 0;
+
+    boolean whiteBishopOnLight = false;
+    boolean whiteBishopOnDark = false;
+    boolean blackBishopOnLight = false;
+    boolean blackBishopOnDark = false;
+
+    for (int row = 0; row < 8; row++) {
+        for (int col = 0; col < 8; col++) {
+            Piece piece = board.getPiece(row, col);
+            if (piece == null) continue;
+
+            PieceColor color = piece.getColor();
+
+            switch (piece.getType()) {
+                case KING:
+                    break;
+
+                case BISHOP:
+                    if (color == PieceColor.WHITE) {
+                        whiteBishops++;
+                        if ((row + col) % 2 == 0) {
+                            whiteBishopOnLight = true;
+                        } else {
+                            whiteBishopOnDark = true;
+                        }
+                    } else {
+                        blackBishops++;
+                        if ((row + col) % 2 == 0) {
+                            blackBishopOnLight = true;
+                        } else {
+                            blackBishopOnDark = true;
+                        }
+                    }
+                    break;
+
+                case KNIGHT:
+                    if (color == PieceColor.WHITE) {
+                        whiteKnights++;
+                    } else {
+                        blackKnights++;
+                    }
+                    break;
+
+                default:
+                    if (color == PieceColor.WHITE) {
+                        whiteOther++;
+                    } else {
+                        blackOther++;
+                    }
+                    break;
+            }
+        }
+    }
+
+    // any pawn, rook, or queen means enough material exists
+    if (whiteOther > 0 || blackOther > 0) {
+        return false;
+    }
+
+    // king vs king
+    if (whiteBishops == 0 && whiteKnights == 0 && blackBishops == 0 && blackKnights == 0) {
+        return true;
+    }
+
+    // king + bishop vs king
+    if (whiteBishops == 1 && whiteKnights == 0 && blackBishops == 0 && blackKnights == 0) {
+        return true;
+    }
+    if (blackBishops == 1 && blackKnights == 0 && whiteBishops == 0 && whiteKnights == 0) {
+        return true;
+    }
+
+    // king + knight vs king
+    if (whiteKnights == 1 && whiteBishops == 0 && blackBishops == 0 && blackKnights == 0) {
+        return true;
+    }
+    if (blackKnights == 1 && blackBishops == 0 && whiteBishops == 0 && whiteKnights == 0) {
+        return true;
+    }
+
+    // king + bishop vs king + bishop, same colored bishops
+    if (whiteBishops == 1 && blackBishops == 1 &&
+        whiteKnights == 0 && blackKnights == 0) {
+
+        boolean bothLight = whiteBishopOnLight && blackBishopOnLight;
+        boolean bothDark = whiteBishopOnDark && blackBishopOnDark;
+
+        if (bothLight || bothDark) {
+            return true;
+        }
+    }
+
+    return false;
+}
 }

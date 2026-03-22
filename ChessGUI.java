@@ -325,16 +325,17 @@ public class ChessGUI extends JFrame {
     }
 
     private ImageIcon loadPieceIcon(String name) {
-        String path = "pieces/" + name + ".png";
-        ImageIcon baseIcon = new ImageIcon(path);
+    java.net.URL imageUrl = getClass().getResource("/pieces/" + name + ".png");
 
-        if (baseIcon.getIconWidth() <= 0) {
-            return createFallbackIcon();
-        }
-
-        Image scaled = baseIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
-        return new ImageIcon(scaled);
+    if (imageUrl == null) {
+        System.out.println("Missing image: /pieces/" + name + ".png");
+        return null;
     }
+
+    ImageIcon baseIcon = new ImageIcon(imageUrl);
+    Image scaled = baseIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+    return new ImageIcon(scaled);
+}
 
     private ImageIcon createFallbackIcon() {
         BufferedImage image = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
